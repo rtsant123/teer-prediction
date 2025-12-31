@@ -40,7 +40,7 @@ enum UserRole {
 // Subscription Plan Model
 model SubscriptionPlan {
   id           String         @id @default(cuid())
-  name         String
+  name         String         @unique
   nameHindi    String?
   durationDays Int
   price        Float
