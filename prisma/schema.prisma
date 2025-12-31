@@ -1,0 +1,202 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id                 String        @id @default(cuid())
+  username           String        @unique
+  email              String?       @unique
+  mobile             String        @unique
+  password           String
+  role               UserRole      @default(USER)
+  isPremium          Boolean       @default(false)
+  subscriptionExpiry DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  subscriptions      Subscription[]
+  payments           Payment[]
+
+  @@index([email])
+  @@index([mobile])
+  @@index([username])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// Subscription Plan Model
+model SubscriptionPlan {
+  id           String         @id @default(cuid())
+  name         String
+  nameHindi    String?
+  durationDays Int
+  price        Float
+  description  String?
+  descriptionHindi String?
+  features     String[]       @default([])
+  isActive     Boolean        @default(true)
+  order        Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@index([isActive])
+}
+
+// Subscription Model
+model Subscription {
+  id        String               @id @default(cuid())
+  userId    String
+  planId    String
+  startDate DateTime
+  endDate   DateTime
+  status    SubscriptionStatus   @default(ACTIVE)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      SubscriptionPlan     @relation(fields: [planId], references: [id])
+  payment   Payment?
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+// Payment Model
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  planId          String
+  subscriptionId  String?       @unique
+  amount          Float
+  currency        String        @default("INR")
+  razorpayOrderId String?       @unique
+  razorpayPaymentId String?     @unique
+  razorpaySignature String?
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  verifiedAt      DateTime?
+  verifiedBy      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([razorpayOrderId])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+// House Model
+model House {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  nameHindi   String?
+  description String?
+  descriptionHindi String?
+  isActive    Boolean     @default(true)
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  results     Result[]
+  predictions Prediction[]
+
+  @@index([isActive])
+}
+
+// Result Model
+model Result {
+  id          String   @id @default(cuid())
+  houseId     String
+  resultDate  DateTime
+  firstRound  String?
+  secondRound String?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  house       House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+
+  @@unique([houseId, resultDate])
+  @@index([houseId])
+  @@index([resultDate])
+}
+
+// Prediction Model
+model Prediction {
+  id              String   @id @default(cuid())
+  houseId         String
+  predictionDate  DateTime
+  predictionType  String   // DIRECT, HOUSE, ENDING, HOT
+  numbers         String[] // Array of predicted numbers
+  confidence      String   @default("MEDIUM") // LOW, MEDIUM, HIGH, VERY_HIGH
+  isPublic        Boolean  @default(false)
+  generatedBy     String   @default("AI") // AI, MANUAL, FORMULA
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  house           House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+
+  @@unique([houseId, predictionDate, predictionType])
+  @@index([houseId])
+  @@index([predictionDate])
+  @@index([isPublic])
+}
+
+// Dream Symbol Model for Dream Interpretation
+model DreamSymbol {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  symbolHindi String?
+  number      String
+  description String?
+  descriptionHindi String?
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([symbol])
+}
+
+// Setting Model
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}
