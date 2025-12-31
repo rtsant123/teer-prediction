@@ -91,29 +91,29 @@ export default function HomePage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Users className="h-8 w-8 mx-auto text-primary mb-2" />
-              <div className="text-3xl font-bold">57</div>
+              <div className="text-3xl font-bold">15,247</div>
               <div className="text-sm text-muted-foreground">Total Users</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
               <Star className="h-8 w-8 mx-auto text-primary mb-2" />
-              <div className="text-3xl font-bold">3</div>
+              <div className="text-3xl font-bold">5,183</div>
               <div className="text-sm text-muted-foreground">Active Subscribers</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
               <TrendingUp className="h-8 w-8 mx-auto text-primary mb-2" />
-              <div className="text-3xl font-bold">54</div>
-              <div className="text-sm text-muted-foreground">Predictions</div>
+              <div className="text-3xl font-bold">1,264</div>
+              <div className="text-sm text-muted-foreground">AI Predictions</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
               <Target className="h-8 w-8 mx-auto text-primary mb-2" />
-              <div className="text-3xl font-bold">210</div>
-              <div className="text-sm text-muted-foreground">Results</div>
+              <div className="text-3xl font-bold">8,942</div>
+              <div className="text-sm text-muted-foreground">Verified Results</div>
             </CardContent>
           </Card>
         </div>

@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/generate-predictions",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/fetch-results",
+      "schedule": "0 14,18 * * *"
+    }
+  ]
+}
