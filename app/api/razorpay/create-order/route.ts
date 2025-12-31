@@ -3,12 +3,6 @@ import Razorpay from "razorpay";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
-
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
@@ -41,6 +35,12 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Initialize Razorpay instance (at runtime, not build time)
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    });
 
     // Create Razorpay order
     const options = {
